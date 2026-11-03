@@ -75,6 +75,21 @@ h1{font-size:34px;letter-spacing:.04em}
 .fact small{display:block;font-size:12px;color:var(--muted);line-height:1.3}
 .fact b{font-weight:400;font-size:15px;line-height:1.3;display:block}
 
+/* 每日天氣 */
+.wx-card{margin-top:14px;padding:12px}
+.wx-title{margin:0 2px 8px;font-size:15px;display:flex;align-items:baseline;gap:8px}
+.wx-title small{margin-left:auto;font-size:12px;color:var(--muted)}
+.wx-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.wx-day{font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0 5px;border:2.5px solid var(--ink);border-radius:14px;background:var(--c);line-height:1.2;min-width:0;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.wx-day:active{transform:scale(.95)}
+.wx-d{font-size:12px}
+.wx-ico{font-size:24px;line-height:1.3}
+.wx-t{font-size:11.5px;white-space:nowrap}
+.wx-temp{font-size:14px;font-variant-numeric:tabular-nums}
+.wx-temp small{font-size:11px;color:var(--muted)}
+.wx-rain{font-size:11px;color:var(--muted)}
+.wx-day.none .wx-ico{opacity:.35}
+
 /* 區塊標題 */
 .section{padding-top:46px}
 .sec-title{display:flex;align-items:center;gap:10px;font-size:24px;margin-bottom:16px}
@@ -126,6 +141,12 @@ h1{font-size:34px;letter-spacing:.04em}
 .day-kicker{margin:0;font-size:13px}
 .day-title{font-size:21px;margin:1px 0 2px}
 .day-sub{margin:0;font-size:13.5px;line-height:1.5}
+.dress{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px;margin:7px 0 0;font-size:13.5px;line-height:1.4}
+.dress-k{font-size:12px}
+.swatches{display:inline-flex;align-items:center}
+.swatch{width:17px;height:17px;border-radius:50%;border:2.5px solid var(--ink);background:var(--c)}
+.swatch + .swatch{margin-left:-4px}
+.dress-note{margin:3px 0 0;font-size:12.5px;line-height:1.45;color:var(--warn)}
 .day-stats{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .day-stats span{font-size:12px;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:0 8px}
 
@@ -223,6 +244,15 @@ h1{font-size:34px;letter-spacing:.04em}
 .stay-dl dt{font-size:13px;background:var(--c);border:2px solid var(--ink);border-radius:10px;text-align:center}
 .stay-dl dd{margin:0;font-size:15px;line-height:1.45}
 .stay-dl .todo-note{color:var(--muted)}
+.rules{border:2.5px solid var(--ink);border-radius:var(--r-md);margin-bottom:16px;background:var(--paper)}
+.rules summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:15px;-webkit-tap-highlight-color:transparent}
+.rules summary::-webkit-details-marker{display:none}
+.rules summary svg{width:16px;height:16px;margin-left:auto;transition:transform .2s}
+.rules[open] summary svg{transform:rotate(90deg)}
+.rules summary small{font-size:12.5px;color:var(--muted)}
+.rules ol{margin:0;padding:8px 14px 10px 32px;border-top:2px dashed #D6CEC4;font-size:14px;line-height:1.5;display:grid;gap:5px}
+.rules li::marker{color:var(--muted)}
+.rules b{font-weight:400;color:var(--warn)}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap}
 .btn{flex:1;display:inline-flex;justify-content:center;align-items:center;gap:6px;padding:8px 14px;border:var(--line) solid var(--ink);border-radius:999px;background:var(--c);box-shadow:0 4px 0 var(--ink);text-decoration:none;font-size:15px;white-space:nowrap;transition:transform .15s,box-shadow .15s}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
@@ -466,6 +496,11 @@ h1{font-size:34px;letter-spacing:.04em}
       <li class="fact"><span class="ico" style="--c:var(--sky)"><svg aria-hidden="true"><use href="#i-plug"/></svg></span><span><small>電壓</small><b>220V</b><small>帶萬用轉接頭</small></span></li>
       <li class="fact"><span class="ico" style="--c:var(--green)"><svg aria-hidden="true"><use href="#i-globe"/></svg></span><span><small>時差</small><b>慢 1 小時</b><small>比台灣慢</small></span></li>
     </ul>
+
+    <div class="card wx-card" id="wxCard" hidden>
+      <p class="wx-title">每日天氣<small id="wxWhen"></small></p>
+      <div class="wx-grid" id="wxGrid"></div>
+    </div>
   </section>
 
   <!-- 航班 -->
@@ -555,11 +590,28 @@ h1{font-size:34px;letter-spacing:.04em}
           <div><dt style="--c:var(--yellow)">入住</dt><dd>11/13（五）12:00</dd></div>
           <div><dt style="--c:var(--coral)">退房</dt><dd>11/17（二）・共 4 晚</dd></div>
           <div><dt style="--c:var(--green)">交通</dt><dd>BTS Bang Chak 站步行 3 分鐘</dd></div>
-          <div><dt style="--c:var(--sky)">地址</dt><dd class="todo-note">待補上（可從訂房確認信複製）</dd></div>
+          <div><dt style="--c:var(--sky)">位置</dt><dd>Google 地圖搜「135 Sis H」</dd></div>
+          <div><dt style="--c:var(--yellow-l)">密碼</dt><dd>房門、行李寄存箱密碼看 Airbnb 房東訊息</dd></div>
+          <div><dt style="--c:var(--green-l)">鑰匙卡</dt><dd>入住後一律用鑰匙卡進出，外出請隨身帶（節能用）</dd></div>
         </dl>
+        <details class="rules">
+          <summary>入住須知 <small>禁菸、禁榴槤…共 9 條</small><svg aria-hidden="true"><use href="#i-right"/></svg></summary>
+          <ol>
+            <li><b>禁止吸菸</b>，違規罰 5,000 泰銖</li>
+            <li>保持房子清潔，垃圾丟提供的垃圾桶</li>
+            <li>保持安靜，不要打擾其他住戶</li>
+            <li>不能開派對</li>
+            <li>不能帶外人進來</li>
+            <li>出門前確認關燈、關冷氣，插頭全部拔掉</li>
+            <li><b>榴槤不能帶進房子</b> 🚫</li>
+            <li>行李可放房子前面的箱子，風險自負，遺失不賠</li>
+            <li>超過 6 人每人每晚加收 500 泰銖（最多 8 人）；超過 8 人每人每晚罰 1,000 泰銖</li>
+          </ol>
+        </details>
         <div class="btn-row">
           <a class="btn" style="--c:var(--coral-l)" href="https://www.airbnb.com.tw/rooms/51631920" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-house"/></svg>查看房源</a>
-          <a class="btn" style="--c:var(--sky-l)" href="https://www.google.com/maps/search/?api=1&amp;query=BTS%20Bang%20Chak" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-map"/></svg>BTS Bang Chak</a>
+          <a class="btn" style="--c:var(--yellow-l)" href="https://maps.app.goo.gl/aPackqwvqGvMciZJ7" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-pin"/></svg>房子位置</a>
+          <!-- <a class="btn" style="--c:var(--sky-l)" href="https://www.google.com/maps/search/?api=1&amp;query=BTS%20Bang%20Chak" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-map"/></svg>BTS Bang Chak</a> -->
         </div>
       </div>
     </article>
@@ -693,12 +745,13 @@ h1{font-size:34px;letter-spacing:.04em}
   const DAYS = [
     { iso: '2026-11-13', date: '11/13', dow: '五', color: 'coral', art: 'tower',
       title: '出發！抵達曼谷', sub: '海鮮午餐・高空步道・甜甜圈',
+      dress: { label: '牛仔・深藍／淺藍', colors: ['#34507A', '#93B5DA'] },
       items: [
         { mode: 'car', text: '出門・台灣機場接送' },
         { mode: 'plane', time: '05:00', text: '抵達桃園機場 T1', note: 'CI833 07:00 起飛' },
         { mode: 'plane', time: '09:50', text: '抵達素萬那普機場' },
         { mode: 'van', text: '泰國機場接送 → 住宿' },
-        { cat: 'home', time: '12:00', name: 'Check in Airbnb', note: 'BTS Bang Chak 站步行 3 分鐘', q: 'BTS Bang Chak', links: [LINKS.airbnb] },
+        { cat: 'home', time: '12:00', name: 'Check in Airbnb', note: '房門密碼看 Airbnb 房東訊息（只能用一次），之後用鑰匙卡進出', map: G('aPackqwvqGvMciZJ7'), links: [LINKS.airbnb] },
         { cat: 'food', time: '13:00', end: '14:00', name: '松松海鮮店 Som Som Seafood', hours: '12:30–22:00', off: '週三公休', note: '推薦咖哩蟹', map: G('ykngS8Bt8215ckVx7'), pic: 'Som Som Seafood' },
         { cat: 'sight', time: '14:10', end: '14:30', name: 'OneSiam Skywalk', map: G('o35VqemXLpBjqaD97'), pic: 'OneSiam Skywalk' },
         { cat: 'sight', time: '14:40', end: '15:30', name: 'True Alpha Hub.', hours: '10:00–20:00', map: G('kqvQC8ETAeX5QA2w5'), pic: 'True Alpha Hub' },
@@ -708,6 +761,7 @@ h1{font-size:34px;letter-spacing:.04em}
       ] },
     { iso: '2026-11-14', date: '11/14', dow: '六', color: 'sky', art: 'boat',
       title: '水上市場一日遊', sub: '鐵道市場・水上市場・森林咖啡',
+      dress: { label: '黑＋白', colors: ['#2E2B2A', '#FFFFFF'], note: '佛統大塔要遮肩、過膝：挑長褲／長裙，或帶件薄外套' },
       items: [
         { mode: 'car', time: '08:00', text: '出門' },
         { mode: 'bus', time: '09:00', text: '集合・水上市場一日遊', links: [LINKS.floating] },
@@ -726,6 +780,7 @@ h1{font-size:34px;letter-spacing:.04em}
       ] },
     { iso: '2026-11-15', date: '11/15', dow: '日', color: 'yellow', art: 'temple',
       title: '泰服・鄭王廟', sub: '泰服拍照・恰圖恰・夜市',
+      dress: { label: '綠＋白', colors: ['#6FAE6B', '#FFFFFF'] },
       items: [
         { mode: 'car', time: '09:00', text: '出門' },
         { cat: 'food', time: '09:40', end: '10:40', name: '邢泰記', hours: '07:00–20:00', map: G('MWrxFWNsT7efxyx5A'), pic: '邢泰記' },
@@ -746,6 +801,7 @@ h1{font-size:34px;letter-spacing:.04em}
       ] },
     { iso: '2026-11-16', date: '11/16', dow: '一', color: 'green', art: 'giraffe',
       title: '北碧府動物園', sub: '和長頸鹿合照，晚上屋頂酒吧',
+      dress: { label: '大地色（美拉德）', colors: ['#D9BF9B', '#B07A45', '#6B4A33'] },
       items: [
         { mode: 'car', time: '08:30', text: '出門' },
         { cat: 'zoo', time: '11:30', end: '15:00', name: '北碧府野生動物園', hours: '09:00–17:00', must: true, note: '動物園門票＋吉普車體驗', map: G('Ei8rnPfCPrNGa8V28'), pic: '北碧府野生動物園' },
@@ -756,6 +812,7 @@ h1{font-size:34px;letter-spacing:.04em}
       ] },
     { iso: '2026-11-17', date: '11/17', dow: '二', color: 'coral', art: 'lotus',
       title: '自由活動・回家', sub: '咖啡・逛街・Spa 後去機場',
+      dress: { label: '灰・淺灰／深灰', colors: ['#D4D2CF', '#7A7674'] },
       items: [
         { mode: 'car', time: '08:00', text: '出門' },
         { cat: 'cafe', time: '08:30', end: '09:30', name: 'C.P.S. COFFEE', hours: '06:30–18:00', map: G('JPMN38vuHkxMCaHW6'), pic: 'C.P.S. COFFEE' },
@@ -787,6 +844,7 @@ h1{font-size:34px;letter-spacing:.04em}
       { id: 'card', text: '信用卡開通海外刷卡' },
     ] },
     { title: '行李・用品', icon: 'i-luggage', c: 'var(--green)', items: [
+      { id: 'dress', text: '依每天 dress code 準備衣服', sub: 'Day 1 牛仔（深藍／淺藍）・Day 2 黑＋白・Day 3 綠＋白・Day 4 大地色（美拉德）・Day 5 灰（淺灰／深灰）' },
       { id: 'sun', text: '防曬、太陽眼鏡、帽子、折疊傘', sub: '白天約 31°C' },
       { id: 'jacket', text: '薄外套', sub: '商場、BTS 冷氣很強' },
       { id: 'shoes', text: '好走的鞋', sub: '市集、動物園都要走很多路' },
@@ -915,8 +973,10 @@ h1{font-size:34px;letter-spacing:.04em}
   try { wxCache = JSON.parse(localStorage.getItem(WX_KEY)); } catch (e) { wxCache = null; }
   const WX = { ...(wxCache && wxCache.days) };
 
-  const wxLabel = c => c === 0 ? '☀️ 晴' : c <= 2 ? '🌤️ 晴時多雲' : c === 3 ? '☁️ 陰' : c <= 48 ? '🌫️ 霧'
-    : c <= 57 ? '🌦️ 毛毛雨' : c <= 67 ? '🌧️ 雨' : c <= 82 ? '🌦️ 陣雨' : '⛈️ 雷雨';
+  // WMO 天氣代碼 → [圖示, 文字]
+  const wxInfo = c => c === 0 ? ['☀️', '晴'] : c === 1 ? ['🌤️', '晴時多雲'] : c === 2 ? ['⛅', '多雲'] : c === 3 ? ['☁️', '陰']
+    : c <= 48 ? ['🌫️', '霧'] : c <= 57 ? ['🌦️', '毛毛雨'] : c <= 67 ? ['🌧️', '雨'] : c <= 82 ? ['🌦️', '陣雨'] : ['⛈️', '雷雨'];
+  const wxLabel = c => wxInfo(c).join(' ');
 
   // 日落時間用天文公式算，不需連網（和 Open-Meteo 的結果相差不到 1 分鐘）
   function sunsetTime(iso) {
@@ -948,12 +1008,32 @@ h1{font-size:34px;letter-spacing:.04em}
     document.getElementById('sunsetVal').textContent = sets[0] === sets.at(-1) ? sets[0] : `${sets[0]}–${sets.at(-1)}`;
     const ws = DAYS.map(d => WX[d.iso]).filter(Boolean);
     if (!ws.length) return;
-    document.getElementById('wxTemp').textContent = `${Math.min(...ws.map(w => w.min))}–${Math.max(...ws.map(w => w.max))}°C`;
+    // 溫度前面放出現最多次的天氣圖示
+    const count = {};
+    ws.forEach(w => { const e = wxInfo(w.code)[0]; count[e] = (count[e] || 0) + 1; });
+    const top = Object.keys(count).sort((a, b) => count[b] - count[a])[0];
+    document.getElementById('wxTemp').textContent = `${top} ${Math.min(...ws.map(w => w.min))}–${Math.max(...ws.map(w => w.max))}°C`;
     const t = new Date(wxCache.t);
-    document.getElementById('wxNote').textContent = ws.length < DAYS.length
-      ? `預報 ${ws.length}/${DAYS.length} 天`
-      : `${t.getMonth() + 1}/${t.getDate()} 預報`;
+    const when = `${t.getMonth() + 1}/${t.getDate()} 預報`;
+    document.getElementById('wxNote').textContent = ws.length < DAYS.length ? `預報 ${ws.length}/${DAYS.length} 天` : when;
+
+    document.getElementById('wxWhen').textContent = `${when}・點一下看當天行程`;
+    document.getElementById('wxGrid').innerHTML = DAYS.map((d, i) => {
+      const w = WX[d.iso];
+      const [emo, txt] = w ? wxInfo(w.code) : ['☁️', '還沒預報'];
+      return `<button type="button" class="wx-day${w ? '' : ' none'}" data-day="${i}" style="--c:var(--${d.color}-l)" aria-label="Day ${i + 1} ${d.date}：${w ? `${txt}，${w.min} 到 ${w.max} 度${w.rain != null ? `，降雨機率 ${w.rain}%` : ''}` : '還沒有預報'}">
+        <span class="wx-d">${d.date}</span><span class="wx-ico" aria-hidden="true">${emo}</span><span class="wx-t">${txt}</span>
+        ${w ? `<span class="wx-temp">${w.max}°<small>/${w.min}°</small></span>${w.rain != null ? `<span class="wx-rain">💧${w.rain}%</span>` : ''}` : ''}
+      </button>`;
+    }).join('');
+    document.getElementById('wxCard').hidden = false;
   }
+  document.getElementById('wxGrid').addEventListener('click', e => {
+    const b = e.target.closest('[data-day]');
+    if (!b) return;
+    select(+b.dataset.day);
+    scrollToSection(planEl);
+  });
 
   // 預報最多 16 天，出發前約兩週才會有；3 小時內抓過就用暫存，沒網路時沿用上次結果
   async function loadWeather() {
@@ -1046,6 +1126,8 @@ h1{font-size:34px;letter-spacing:.04em}
           <p class="day-kicker">Day ${i + 1}・${d.date}（${d.dow}）</p>
           <h3 class="day-title">${d.title}</h3>
           <p class="day-sub">${d.sub}</p>
+          ${d.dress ? `<p class="dress"><span class="dress-k">今日穿搭</span><span class="swatches" aria-hidden="true">${d.dress.colors.map(c => `<i class="swatch" style="--c:${c}"></i>`).join('')}</span>${d.dress.label}</p>` : ''}
+          ${d.dress && d.dress.note ? `<p class="dress-note">⚠ ${d.dress.note}</p>` : ''}
           <div class="day-stats">${statsHTML(i)}</div>
         </div>
       </div>
